@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Reinvented Tetris Game - A modern, accessible take on the classic game">
+    <title>Reinvented Tetris</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Favicon - Using data URI to avoid needing an external file -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>" type="image/svg+xml">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1 class="visually-hidden">Reinvented Tetris</h1>
+            <div id="logo">Reinvented Tetris</div>
+        </header>
+
+        <main>
+            <div id="game-area">
+                <div id="start-screen" class="game-screen">
+                    <div class="start-content">
+                        <h2>Reinvented Tetris</h2>
+                        <button id="start-button" class="primary-button" aria-label="Start Game">Start Game</button>
+                        <div class="difficulty-selector">
+                            <h3>Select Difficulty</h3>
+                            <div class="difficulty-options">
+                                <button class="difficulty-button selected" data-difficulty="classic">Classic</button>
+                                <button class="difficulty-button" data-difficulty="zen">Zen</button>
+                                <button class="difficulty-button" data-difficulty="challenge">Challenge</button>
+                                <button class="difficulty-button" data-difficulty="hardcore">Hardcore</button>
+                            </div>
+                        </div>
+                        <div class="theme-selector">
+                            <h3>Select Theme</h3>
+                            <div class="theme-options">
+                                <button class="theme-button selected" data-theme="retro">Retro</button>
+                                <button class="theme-button" data-theme="neon">Neon</button>
+                                <button class="theme-button" data-theme="nature">Nature</button>
+                                <button class="theme-button" data-theme="sci-fi">Sci-Fi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="game-screen" class="game-screen hidden">
+                    <div class="game-layout">
+                        <div class="sidebar left-sidebar">
+                            <div id="hold-piece-container">
+                                <h3>Hold</h3>
+                                <div id="hold-piece" class="piece-display" aria-label="Hold piece area"></div>
+                            </div>
+                            <div id="stats-container">
+                                <div class="stat-item">
+                                    <span class="stat-label">Level</span>
+                                    <span id="level" class="stat-value">1</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Score</span>
+                                    <span id="score" class="stat-value">0</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Lines</span>
+                                    <span id="lines" class="stat-value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="tetris-container">
+                            <canvas id="tetris-canvas" aria-label="Tetris game board">
+                                Your browser does not support the canvas element.
+                            </canvas>
+                            <div id="ai-assistant" class="hidden">
+                                <p id="ai-message"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar right-sidebar">
+                            <div id="next-pieces-container">
+                                <h3>Next</h3>
+                                <div id="next-pieces" aria-label="Next pieces preview">
+                                    <div class="next-piece-display"></div>
+                                    <div class="next-piece-display"></div>
+                                    <div class="next-piece-display"></div>
+                                </div>
+                            </div>
+                            <div id="power-ups-container">
+                                <h3>Power-ups</h3>
+                                <div class="power-up" id="power-slow-time" data-type="slow-time">
+                                    <span class="power-up-icon">⏱️</span>
+                                    <span class="power-up-label">Slow Time</span>
+                                </div>
+                                <div class="power-up" id="power-clear-row" data-type="clear-row">
+                                    <span class="power-up-icon">💥</span>
+                                    <span class="power-up-label">Clear Row</span>
+                                </div>
+                                <div class="power-up" id="power-swap-piece" data-type="swap-piece">
+                                    <span class="power-up-icon">🔄</span>
+                                    <span class="power-up-label">Swap Piece</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="game-controls">
+                        <button id="pause-button" class="control-button" aria-label="Pause game">
+                            <span class="button-icon">⏸️</span>
+                        </button>
+                        <button id="restart-button" class="control-button" aria-label="Restart game">
+                            <span class="button-icon">🔄</span>
+                        </button>
+                        <button id="mute-button" class="control-button" aria-label="Toggle sound">
+                            <span class="button-icon">🔊</span>
+                        </button>
+                        <button id="settings-button" class="control-button" aria-label="Open settings">
+                            <span class="button-icon">⚙️</span>
+                        </button>
+                    </div>
+                    
+                    <div id="mobile-controls" class="hidden">
+                        <div class="mobile-controls-row">
+                            <button id="rotate-button" class="mobile-button" aria-label="Rotate piece">Rotate</button>
+                        </div>
+                        <div class="mobile-controls-row">
+                            <button id="left-button" class="mobile-button" aria-label="Move piece left">Left</button>
+                            <button id="down-button" class="mobile-button" aria-label="Soft drop">Down</button>
+                            <button id="right-button" class="mobile-button" aria-label="Move piece right">Right</button>
+                        </div>
+                        <div class="mobile-controls-row">
+                            <button id="hold-button" class="mobile-button" aria-label="Hold piece">Hold</button>
+                            <button id="drop-button" class="mobile-button" aria-label="Hard drop">Drop</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="pause-screen" class="game-screen hidden">
+                    <div class="pause-content">
+                        <h2>Game Paused</h2>
+                        <button id="resume-button" class="primary-button" aria-label="Resume Game">Resume</button>
+                        <button id="restart-paused-button" class="secondary-button" aria-label="Restart Game">Restart</button>
+                        <button id="settings-paused-button" class="secondary-button" aria-label="Settings">Settings</button>
+                        <button id="exit-button" class="secondary-button" aria-label="Exit to Main Menu">Exit to Menu</button>
+                    </div>
+                </div>
+                
+                <div id="settings-screen" class="game-screen hidden">
+                    <div class="settings-content">
+                        <h2>Settings</h2>
+                        <div class="settings-section">
+                            <h3>Audio</h3>
+                            <div class="setting-item">
+                                <label for="music-volume">Music Volume</label>
+                                <input type="range" id="music-volume" min="0" max="100" value="70">
+                            </div>
+                            <div class="setting-item">
+                                <label for="sfx-volume">Effects Volume</label>
+                                <input type="range" id="sfx-volume" min="0" max="100" value="80">
+                            </div>
+                            <div class="setting-item">
+                                <label for="music-selection">Background Music</label>
+                                <select id="music-selection">
+                                    <option value="chiptune">Chiptune</option>
+                                    <option value="lofi">Lo-Fi</option>
+                                    <option value="orchestral">Orchestral</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Customization</h3>
+                            <div class="setting-item">
+                                <label for="block-style">Block Style</label>
+                                <select id="block-style">
+                                    <option value="standard">Standard</option>
+                                    <option value="custom">Custom</option>
+                                    <option value="random">Random</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="color-blindness">Color Blindness Mode</label>
+                                <select id="color-blindness">
+                                    <option value="none">None</option>
+                                    <option value="protanopia">Protanopia</option>
+                                    <option value="deuteranopia">Deuteranopia</option>
+                                    <option value="tritanopia">Tritanopia</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="high-contrast">High Contrast</label>
+                                <input type="checkbox" id="high-contrast">
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Accessibility</h3>
+                            <div class="setting-item">
+                                <label for="screen-shake">Screen Shake</label>
+                                <input type="checkbox" id="screen-shake" checked>
+                            </div>
+                            <div class="setting-item">
+                                <label for="reduced-motion">Reduced Motion</label>
+                                <input type="checkbox" id="reduced-motion">
+                            </div>
+                            <div class="setting-item">
+                                <label for="ai-assistance">AI Assistance</label>
+                                <input type="checkbox" id="ai-assistance" checked>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3>Controls</h3>
+                            <button id="controls-help-button" class="secondary-button">View Controls</button>
+                        </div>
+                        <button id="save-settings-button" class="primary-button">Save Settings</button>
+                        <button id="cancel-settings-button" class="secondary-button">Cancel</button>
+                    </div>
+                </div>
+                
+                <div id="game-over-screen" class="game-screen hidden">
+                    <div class="game-over-content">
+                        <h2>Game Over</h2>
+                        <div id="final-score-container">
+                            <p>Final Score: <span id="final-score">0</span></p>
+                            <p>Lines Cleared: <span id="final-lines">0</span></p>
+                            <p>Level Reached: <span id="final-level">0</span></p>
+                        </div>
+                        <div id="ai-feedback" class="ai-feedback"></div>
+                        <div id="high-score-input" class="hidden">
+                            <p>New High Score!</p>
+                            <label for="player-name">Enter Your Name:</label>
+                            <input type="text" id="player-name" maxlength="20" placeholder="Your Name">
+                            <button id="save-score-button" class="primary-button">Save Score</button>
+                        </div>
+                        <button id="play-again-button" class="primary-button">Play Again</button>
+                        <button id="view-leaderboard-button" class="secondary-button">View Leaderboard</button>
+                        <button id="game-over-menu-button" class="secondary-button">Main Menu</button>
+                    </div>
+                </div>
+                
+                <div id="leaderboard-screen" class="game-screen hidden">
+                    <div class="leaderboard-content">
+                        <h2>Leaderboard</h2>
+                        <div id="leaderboard-tabs">
+                            <button class="leaderboard-tab selected" data-difficulty="classic">Classic</button>
+                            <button class="leaderboard-tab" data-difficulty="zen">Zen</button>
+                            <button class="leaderboard-tab" data-difficulty="challenge">Challenge</button>
+                            <button class="leaderboard-tab" data-difficulty="hardcore">Hardcore</button>
+                        </div>
+                        <div id="leaderboard-list"></div>
+                        <button id="leaderboard-back-button" class="primary-button">Back</button>
+                    </div>
+                </div>
+                
+                <div id="controls-help-screen" class="game-screen hidden">
+                    <div class="controls-help-content">
+                        <h2>Game Controls</h2>
+                        <div class="controls-section">
+                            <h3>Keyboard Controls</h3>
+                            <ul class="controls-list">
+                                <li><span class="control-key">←</span> Move Left</li>
+                                <li><span class="control-key">→</span> Move Right</li>
+                                <li><span class="control-key">↓</span> Soft Drop</li>
+                                <li><span class="control-key">Z</span> Rotate Counter-Clockwise</li>
+                                <li><span class="control-key">X</span> Rotate Clockwise</li>
+                                <li><span class="control-key">Space</span> Hard Drop</li>
+                                <li><span class="control-key">C</span> Hold Piece</li>
+                                <li><span class="control-key">P</span> Pause/Resume</li>
+                                <li><span class="control-key">R</span> Restart</li>
+                                <li><span class="control-key">M</span> Mute/Unmute</li>
+                            </ul>
+                        </div>
+                        <div class="controls-section">
+                            <h3>Mobile Controls</h3>
+                            <p>Use the on-screen buttons to control the game on mobile.</p>
+                        </div>
+                        <div class="controls-section">
+                            <h3>Power-ups</h3>
+                            <ul class="controls-list">
+                                <li><span class="control-key">1</span> Slow Time</li>
+                                <li><span class="control-key">2</span> Clear Row</li>
+                                <li><span class="control-key">3</span> Swap Piece</li>
+                            </ul>
+                        </div>
+                        <button id="controls-back-button" class="primary-button">Back</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Created with ❤️ using Claude 3.7 AI | <a href="https://github.com/bibitybaqityboo/tetris-game" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+        </footer>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="bgm-chiptune" loop preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="bgm-lofi" loop preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="bgm-orchestral" loop preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    
+    <!-- Sound effects -->
+    <audio id="sfx-move" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-rotate" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-drop" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-clear" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-tetris" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-levelup" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-gameover" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-hold" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-powerup" preload="none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCcm93c2VyIGNvbXBhdGliaWxpdHkgcGhhbnRvbSBhdWRpbwAAAFhQUklWAAMg" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html> 

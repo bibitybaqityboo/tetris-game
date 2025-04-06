@@ -1,0 +1,564 @@
+/* Reset and base styles */
+:root {
+  --primary-color: #2a7fff;
+  --secondary-color: #ff7f2a;
+  --background-color: #121212;
+  --surface-color: #1e1e1e;
+  --text-color: #ffffff;
+  --grid-color: #333333;
+  --grid-border: #4a4a4a;
+  --retro-primary: #2a7fff;
+  --neon-primary: #ff00ff;
+  --nature-primary: #4caf50;
+  --scifi-primary: #00bcd4;
+  
+  /* Tetromino colors */
+  --i-color: #00f0f0;
+  --j-color: #0000f0;
+  --l-color: #f0a000;
+  --o-color: #f0f000;
+  --s-color: #00f000;
+  --t-color: #a000f0;
+  --z-color: #f00000;
+  
+  /* Color blindness modes */
+  --colorblind-i: #0072B2;
+  --colorblind-j: #56B4E9;
+  --colorblind-l: #E69F00;
+  --colorblind-o: #F0E442;
+  --colorblind-s: #009E73;
+  --colorblind-t: #CC79A7;
+  --colorblind-z: #D55E00;
+  
+  --font-game: 'Press Start 2P', cursive;
+  --font-ui: 'Roboto', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Main layout */
+#game-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+#logo {
+  font-family: var(--font-game);
+  font-size: 2rem;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px rgba(42, 127, 255, 0.7);
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#game-area {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16/9;
+  background-color: var(--surface-color);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+footer {
+  padding: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* Game screen styles */
+.game-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-color);
+  padding: 1rem;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Start screen */
+.start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.start-content h2 {
+  font-family: var(--font-game);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(42, 127, 255, 0.5);
+}
+
+.difficulty-selector, .theme-selector {
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.difficulty-options, .theme-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.difficulty-button, .theme-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--primary-color);
+  background: transparent;
+  color: var(--text-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.difficulty-button:hover, .theme-button:hover,
+.difficulty-button.selected, .theme-button.selected {
+  background-color: var(--primary-color);
+  color: #000;
+}
+
+/* Game layout */
+.game-layout {
+  display: flex;
+  width: 100%;
+  height: 85%;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.sidebar {
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+#tetris-container {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+#tetris-canvas {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  border: 2px solid var(--grid-border);
+}
+
+/* Game controls */
+#game-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  background-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+/* Mobile controls */
+#mobile-controls {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.mobile-controls-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.mobile-button {
+  padding: 0.75rem;
+  border: none;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  border-radius: 4px;
+  font-weight: bold;
+  min-width: 60px;
+  cursor: pointer;
+}
+
+/* Stat displays */
+#hold-piece-container, #next-pieces-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+#hold-piece, .next-piece-display {
+  width: 100%;
+  aspect-ratio: 1/1;
+  margin-top: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--grid-border);
+}
+
+#stats-container, #power-ups-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.75rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-weight: bold;
+}
+
+.stat-value {
+  font-family: var(--font-game);
+}
+
+/* Power ups */
+.power-up {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.power-up:hover {
+  background-color: var(--primary-color);
+  color: #000;
+}
+
+.power-up-icon {
+  font-size: 1.2rem;
+}
+
+/* AI Assistant */
+#ai-assistant {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 4px;
+  padding: 0.75rem;
+  color: var(--text-color);
+  font-style: italic;
+  transition: all 0.3s ease;
+  z-index: 5;
+}
+
+/* Button styles */
+.primary-button, .secondary-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0.5rem;
+  min-width: 150px;
+}
+
+.primary-button {
+  background-color: var(--primary-color);
+  color: #000;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--primary-color);
+}
+
+.primary-button:hover, .secondary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  #logo {
+    font-size: 1.5rem;
+  }
+  
+  .game-layout {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem;
+  }
+  
+  #tetris-container {
+    width: 100%;
+    aspect-ratio: 1/1.8;
+  }
+  
+  #hold-piece-container, #next-pieces-container,
+  #stats-container, #power-ups-container {
+    width: 48%;
+    margin-bottom: 0.5rem;
+  }
+  
+  #mobile-controls {
+    display: flex;
+  }
+  
+  .control-button {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Theme Classes */
+body.theme-retro {
+  --primary-color: var(--retro-primary);
+}
+
+body.theme-neon {
+  --primary-color: var(--neon-primary);
+}
+
+body.theme-nature {
+  --primary-color: var(--nature-primary);
+}
+
+body.theme-sci-fi {
+  --primary-color: var(--scifi-primary);
+}
+
+/* Accessibility features */
+body.reduced-motion * {
+  transition: none !important;
+  animation: none !important;
+}
+
+body.high-contrast {
+  --background-color: #000;
+  --surface-color: #111;
+  --text-color: #fff;
+  --grid-color: #222;
+  --grid-border: #fff;
+}
+
+/* Settings, pause, game over, leaderboard screens */
+.pause-content, .settings-content, .game-over-content, .leaderboard-content, .controls-help-content {
+  background-color: var(--surface-color);
+  border-radius: 8px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.settings-section h3 {
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--grid-border);
+  padding-bottom: 0.5rem;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.setting-item label {
+  margin-right: 1rem;
+}
+
+/* Leaderboard */
+#leaderboard-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.leaderboard-tab {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.leaderboard-tab.selected {
+  background-color: var(--primary-color);
+  color: #000;
+}
+
+#leaderboard-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Controls help */
+.controls-list {
+  list-style: none;
+}
+
+.controls-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.control-key {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--grid-border);
+  border-radius: 4px;
+  margin-right: 0.75rem;
+  font-family: monospace;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.game-screen {
+  animation: fade-in 0.3s ease-out;
+}
+
+.start-content h2, .primary-button, .secondary-button {
+  animation: slide-in 0.5s ease-out;
+}
+
+/* Add focus styles for accessibility */
+button:focus, select:focus, input:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Ensure buttons are accessible with keyboard navigation */
+button, select, input[type="checkbox"], input[type="range"] {
+  cursor: pointer;
+}
